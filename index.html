@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <style>
+    
+    </style>
+  </head>
+  
+  <body>
+    <a id='first' href='#'>First</a>
+    <a id='prev' href='#'>Previous</a>
+    <a id='next' href='#'>Next</a>
+    <a id='last' href='#'>Last</a>
+
+    <ul></ul>
+    
+    <script>
+      let data = {};
+      
+      window.addEventListener('hashchange', (ev) => {
+        const id = window.location.hash.slice(1);
+        data.page = id;
+        loadData(id);
+        console.log(data.page);
+      })
+      
+      const loadData = async (page = 0) => {
+        const response = await fetch (`https://acme-users-api-rev.herokuapp.com/api/users/${page}`);
+        data = await response.json();
+        const html = data.users.map(user => `<li> ${user.fullName} </li>`).join('');
+        document.querySelector('ul').innerHTML = html;
+        const totalEntries = Math.ceil((data.count / 50) - 1);
+        document.querySelector('#first').href = '#';
+        document.querySelector('#prev').href = '#' + Number(page - 1);
+        document.querySelector('#next').href = '#' + Number(page + 1);
+        document.querySelector('#last').href = '#' + totalEntries;
+      }
+
+      loadData(window.location.hash.slice(1));
+
+    </script>
+  </body>
+  
+</html>
